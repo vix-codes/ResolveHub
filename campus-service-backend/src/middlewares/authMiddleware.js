@@ -18,6 +18,9 @@ module.exports = (req, res, next) => {
 
     next();
   } catch (err) {
+    if (err instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ message: "Token expired" });
+    }
     return res.status(401).json({ message: "Invalid token" });
   }
 };

@@ -1,4 +1,4 @@
-# Apartment Complaint Management System - Deployment & Production Readiness
+# ResolveHub - Deployment & Production Readiness
 
 This document summarizes production-ready features for scaling to 1000+ requests.
 
@@ -152,7 +152,7 @@ npm install @sentry/node
 
 ## Recruiter Line
 
-**"Designed for real campus-scale deployment. Secure, hardened Express backend with Winston logging, rate limiting, and PM2 clustering. Stateless JWT auth scales horizontally. Docker-ready for Kubernetes. Supports 1000+ concurrent requests with MongoDB Atlas. Production-grade error tracking, environment configs, and graceful shutdown."**
+**"ResolveHub is designed for real production-scale deployment. Secure, hardened Express backend with Winston logging, rate limiting, and PM2 clustering. Stateless JWT auth scales horizontally. Docker-ready for Kubernetes. Supports 1000+ concurrent requests with MongoDB Atlas. Production-grade error tracking, environment configs, and graceful shutdown."**
 
 ## Quick Checklist for Going Live
 

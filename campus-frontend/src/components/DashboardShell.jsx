@@ -27,7 +27,7 @@ const DashboardShell = ({
         }`}
       >
         <div className="dashboard-sidebar__top">
-          <AppBrand size="sm" label={sidebarExpanded ? "ASRT System" : "ASRT"} />
+          <AppBrand size="sm" label={sidebarExpanded ? "ResolveHub" : "RH"} />
           <IconButton
             onClick={onToggleSidebar}
             title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}

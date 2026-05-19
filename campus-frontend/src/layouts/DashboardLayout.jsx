@@ -10,7 +10,7 @@ const DashboardLayout = ({ children }) => {
     <>
       <div className="topbar">
         <div className="topbar__brand">
-          <AppBrand size="md" label="ASRT System" />
+          <AppBrand size="md" label="ResolveHub" />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <NotificationBell />

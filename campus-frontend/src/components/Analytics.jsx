@@ -1,7 +1,6 @@
 import IconButton from "./IconButton";
 import { 
   RefreshIcon, 
-  ActivityIcon, 
   ClockIcon, 
   UserIcon, 
   AlertCircleIcon, 
@@ -9,7 +8,8 @@ import {
   InboxIcon,
   HammerIcon,
   XCircleIcon,
-  ArchiveIcon
+  ArchiveIcon,
+  PlusIcon
 } from "./icons";
 
 const msToHours = (ms) => {
@@ -25,7 +25,7 @@ const MetricCard = ({ title, value, icon: Icon, colorClass }) => (
         <span className="metric-card__value">{value}</span>
       </div>
       <div className="metric-card__icon-wrapper">
-        <Icon className="metric-card__icon" />
+        {Icon && <Icon className="metric-card__icon" />}
       </div>
     </div>
   </div>

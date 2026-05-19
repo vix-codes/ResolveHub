@@ -73,12 +73,16 @@ const generateToken = async () => {
       const num = parseInt(raw, 10);
       if (!Number.isNaN(num)) next = num + 1;
     }
-    // Now upsert
-    counter = await Counter.findByIdAndUpdate(
-      counterId,
-      { $inc: { seq: 1 }, $setOnInsert: { seq: next - 1 } },
-      { new: true, upsert: true } // Upsert is true, so first request will insert and increment to `next`
-    );
+    try {
+      counter = await Counter.create({ _id: counterId, seq: next });
+    } catch (error) {
+      if (error?.code !== 11000) throw error;
+      counter = await Counter.findByIdAndUpdate(
+        counterId,
+        { $inc: { seq: 1 } },
+        { new: true }
+      );
+    }
   }
 
   return `${prefix}${String(counter.seq).padStart(4, "0")}`;
@@ -295,12 +299,17 @@ exports.updateStatus = async (req, res) => {
     const role = req.user.role;
     const userId = req.user.id;
 
+    const normalizedStatus = String(status || "").toUpperCase();
+    if (!normalizedStatus) {
+      return res.status(400).json({ message: "Unsupported status" });
+    }
+
     const complaint = await Complaint.findById(id);
     if (!complaint) return res.status(404).json({ message: "Not found" });
 
     const previousStatus = complaint.status;
 
-    if (status === "IN_PROGRESS") {
+    if (normalizedStatus === "IN_PROGRESS") {
       if (role !== "technician") {
         return res.status(403).json({ message: "Technician only" });
       }
@@ -324,7 +333,7 @@ exports.updateStatus = async (req, res) => {
         note: "Work started",
         req,
       });
-    } else if (status === "COMPLETED") {
+    } else if (normalizedStatus === "COMPLETED") {
       if (role !== "technician") {
         return res.status(403).json({ message: "Technician only" });
       }
@@ -359,7 +368,7 @@ exports.updateStatus = async (req, res) => {
         complaintId: complaint._id,
         relatedToken: complaint.token,
       });
-    } else if (status === "REJECTED") {
+    } else if (normalizedStatus === "REJECTED") {
       if (role !== "technician") {
         return res.status(403).json({ message: "Technician only" });
       }
@@ -395,7 +404,7 @@ exports.updateStatus = async (req, res) => {
         complaintId: complaint._id,
         relatedToken: complaint.token,
       });
-    } else if (status === "CLOSED") {
+    } else if (normalizedStatus === "CLOSED") {
       if (!["manager", "admin"].includes(role)) {
         return res.status(403).json({ message: "Manager/Admin only" });
       }
@@ -426,7 +435,7 @@ exports.updateStatus = async (req, res) => {
         complaintId: complaint._id,
         relatedToken: complaint.token,
       });
-    } else if (status === "NEW") {
+    } else if (normalizedStatus === "NEW") {
       const isManagerOrAdmin = ["manager", "admin"].includes(role);
       const isTenantOwner =
         role === "tenant" && complaint.createdBy?.toString() === userId;

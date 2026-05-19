@@ -57,7 +57,7 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card card glass-card">
         <div style={{ marginBottom: "10px" }}>
-          <AppBrand size="lg" label="ASRT System" />
+          <AppBrand size="lg" label="ResolveHub" />
         </div>
         <h1>Login</h1>
         <form onSubmit={handleLogin}>

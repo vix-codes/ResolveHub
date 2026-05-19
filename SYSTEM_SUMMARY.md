@@ -1,9 +1,9 @@
-# Apartment Complaint Management System — Summary
+# ResolveHub — Summary
 
 **Deployed Feature Set:** Full lifecycle tracking, RBAC enforcement, activity logging, notifications, evidence images, admin analytics, and production-grade security/logging.
 
 **Recruiter Line:** 
-> "Designed for real campus-scale deployment. Handling 1000+ requests with enterprise security hardening (Helmet, rate-limiting, input sanitization), Winston structured logging with daily rotation, PM2 clustering, JWT authentication, and Docker containerization for Kubernetes environments."
+> "ResolveHub is designed for real production-scale deployment. Handling 1000+ requests with enterprise security hardening (Helmet, rate-limiting, input sanitization), Winston structured logging with daily rotation, PM2 clustering, JWT authentication, and Docker containerization for Kubernetes environments."
 
 ## What Was Built
 
@@ -173,7 +173,7 @@ docker-compose up --build
 
 ## Recruiter Summary
 
-> "Apartment Complaint Management System designed for real, production-scale deployment. Handles 1000+ concurrent requests with enterprise-grade infrastructure:
+> "ResolveHub is designed for real, production-scale deployment. Handles 1000+ concurrent requests with enterprise-grade infrastructure:
 > 
 > **Security:** Helmet HTTP headers hardening, rate limiting (configurable per minute), NoSQL injection & XSS protection, JWT authentication with environment-configured secrets and expiry.
 > 

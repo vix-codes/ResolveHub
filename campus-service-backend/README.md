@@ -1,4 +1,4 @@
-# Apartment Complaint Management System — Backend
+# ResolveHub — Backend
 
 **Designed for real residential-scale deployment.**
 
@@ -200,4 +200,4 @@ Test flows:
 
 ## Recruiter Line
 
-**"Designed for real campus-scale deployment with enterprise logging, security hardening, and PM2 clustering—ready for 1000+ concurrent users and production kubernetes environments."**
+**"ResolveHub is designed for real production-scale deployment with enterprise logging, security hardening, and PM2 clustering—ready for 1000+ concurrent users and production kubernetes environments."**

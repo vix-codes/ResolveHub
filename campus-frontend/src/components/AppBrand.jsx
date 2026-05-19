@@ -1,4 +1,4 @@
-const AppBrand = ({ size = "md", label = "ASRT System" }) => {
+const AppBrand = ({ size = "md", label = "ResolveHub" }) => {
   const px = size === "sm" ? 18 : size === "lg" ? 28 : 22;
 
   return (

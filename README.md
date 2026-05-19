@@ -1,4 +1,4 @@
-# Apartment Service Request Tracking System
+# ResolveHub
 
 A production-oriented full-stack platform for handling apartment maintenance/service requests from submission to closure.
 

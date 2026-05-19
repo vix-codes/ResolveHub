@@ -1,9 +1,9 @@
-# Apartment Complaint Management System — Quick Deployment Card
+# ResolveHub — Quick Deployment Card
 
 ## Status: ✅ PRODUCTION READY
 
 **Recruiter Line:**
-> "Secure, production-grade campus request system. Handles 1000+ concurrent requests with enterprise logging, PM2 clustering, Docker containerization, and horizontal scaling support."
+> "ResolveHub is a secure, production-grade request resolution platform. Handles 1000+ concurrent requests with enterprise logging, PM2 clustering, Docker containerization, and horizontal scaling support."
 
 ---
 

@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     res.end(
       JSON.stringify({
         message:
-          "Missing API_ORIGIN env var. Set it to your Railway backend origin, e.g. https://your-app.up.railway.app",
+          "Missing API_ORIGIN env var. Set it to your backend origin, e.g. https://api.example.com or http://143.198.160.235:5000",
       })
     );
     return;

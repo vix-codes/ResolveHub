@@ -6,7 +6,15 @@ const normalizeBaseUrl = (value) => {
   if (!value) return "";
   const v = String(value).trim().replace(/\/+$/, "");
   if (!v) return "";
-  if (!/^https?:\/\//i.test(v)) return `https://${v}`;
+
+  if (!/^https?:\/\//i.test(v)) {
+    const isLocalhost = /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(v);
+    if (isLocalhost) {
+      return `http://${v}`;
+    }
+    return `https://${v}`;
+  }
+
   return v;
 };
 
@@ -14,7 +22,8 @@ const withApiPrefix = (base) => {
   if (!base) return "";
   const v = String(base).trim().replace(/\/+$/, "");
   if (!v) return "";
-  return /\/api$/i.test(v) ? v : `${v}/api`;
+  // Avoid double-appending /api or /api/
+  return /\/api\/?$/i.test(v) ? v : `${v}/api`;
 };
 
 const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true" || import.meta.env.VITE_DEMO_MODE === true;
@@ -37,48 +46,58 @@ const API = axios.create({
   })(),
 });
 
+const normalizeDemoPath = (url, baseURL, params) => {
+  let path = url || "/";
+  if (baseURL && path.startsWith(baseURL)) {
+    path = path.replace(baseURL, "");
+  }
+  path = path.replace(/^\/api/, "") || "/";
+  if (!path.startsWith("/")) path = "/" + path;
+
+  const query = params ? new URLSearchParams(params).toString() : "";
+  const fullPath = query ? `${path}?${query}` : path;
+
+  const basePath = path.split("?")[0].replace(/\/$/, "") || "/";
+
+  return { fullPath, basePath };
+};
+
 // Demo Mode Interceptor
 if (isDemoMode) {
   API.interceptors.request.use((config) => {
-    // Normalization: Ensure relative paths for matching
-    let url = config.url;
-    if (config.baseURL && url.startsWith(config.baseURL)) {
-      url = url.replace(config.baseURL, "");
-    }
-    url = url.replace(/^\/api/, "") || "/";
-    if (!url.startsWith("/")) url = "/" + url;
+    const { fullPath, basePath } = normalizeDemoPath(
+      config.url,
+      config.baseURL,
+      config.params
+    );
 
-    const fullUrlWithParams = url + (config.params ? "?" + new URLSearchParams(config.params).toString() : "");
-    
-    // Improved demo matching logic
     const getHandler = () => {
-      // 1. Try exact match with params
-      if (mockHandlers[fullUrlWithParams]) return mockHandlers[fullUrlWithParams];
-      // 2. Try match with base path (no params)
-      const basePath = url.split('?')[0].replace(/\/$/, "");
+      if (mockHandlers[fullPath]) return mockHandlers[fullPath];
       if (mockHandlers[basePath]) return mockHandlers[basePath];
-      // 3. Try match with trailing slash
       if (mockHandlers[`${basePath}/`]) return mockHandlers[`${basePath}/`];
       return null;
     };
 
     const handler = getHandler();
-    
+
     if (handler && config.method.toLowerCase() === "get") {
-      console.log(`[Demo Mode] Intercepting GET ${fullUrlWithParams}`);
+      console.log(`[Demo Mode] Intercepting GET ${fullPath}`);
       config.adapter = async () => {
         return new Promise((resolve) => {
-          setTimeout(() => resolve(handler()), 400); 
+          setTimeout(() => resolve(handler()), 400);
         });
       };
     } else if (config.method.toLowerCase() !== "get") {
-      console.log(`[Demo Mode] Simulating ${config.method} ${url}`);
+      console.log(`[Demo Mode] Simulating ${config.method} ${config.url}`);
       config.adapter = async () => {
         return new Promise((resolve) => {
           setTimeout(() => resolve(handleMockAction(config)), 400);
         });
       };
+    } else if (!handler) {
+      console.warn(`[Demo Mode] No mock handler for ${fullPath}`);
     }
+
     return config;
   });
 }
