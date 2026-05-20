@@ -2,11 +2,9 @@ FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
-# Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --omit=dev --prefer-offline 2>/dev/null || npm install --omit=dev
 
-# Copy source
 COPY . .
 
 ENV NODE_ENV=production
