@@ -1,5 +1,6 @@
 const Complaint = require("../models/Complaint");
 const User = require("../models/User");
+const { getAiRuntimeMetrics } = require("../services/ai/aiMetrics");
 
 const getAdminAnalytics = async (req, res) => {
   try {
@@ -121,4 +122,120 @@ const getAdminAnalytics = async (req, res) => {
   }
 };
 
-module.exports = { getAdminAnalytics };
+const getAiAnalytics = async (req, res) => {
+  try {
+    if (!["admin", "manager"].includes(req.user.role)) {
+      return res.status(403).json({ message: "Admin/Manager only" });
+    }
+
+    const [
+      categoryDistribution,
+      priorityDistribution,
+      confidenceAgg,
+      aiStatusCounts,
+      criticalTrend,
+      topTags,
+    ] = await Promise.all([
+      Complaint.aggregate([
+        { $match: { aiStatus: "COMPLETED", aiCategory: { $ne: null } } },
+        { $group: { _id: "$aiCategory", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $project: { category: "$_id", count: 1, _id: 0 } },
+      ]),
+
+      Complaint.aggregate([
+        { $match: { aiStatus: "COMPLETED", aiPriority: { $ne: null } } },
+        { $group: { _id: "$aiPriority", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $project: { priority: "$_id", count: 1, _id: 0 } },
+      ]),
+
+      Complaint.aggregate([
+        { $match: { aiStatus: "COMPLETED", aiConfidence: { $ne: null } } },
+        {
+          $group: {
+            _id: null,
+            avgConfidence: { $avg: "$aiConfidence" },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+
+      Complaint.aggregate([
+        { $group: { _id: "$aiStatus", count: { $sum: 1 } } },
+        { $project: { status: "$_id", count: 1, _id: 0 } },
+      ]),
+
+      Complaint.aggregate([
+        {
+          $match: {
+            aiPriority: "CRITICAL",
+            createdAt: {
+              $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+        { $project: { date: "$_id", count: 1, _id: 0 } },
+      ]),
+
+      Complaint.aggregate([
+        {
+          $match: {
+            aiStatus: "COMPLETED",
+            aiTags: { $exists: true, $not: { $size: 0 } },
+          },
+        },
+        { $unwind: "$aiTags" },
+        { $group: { _id: "$aiTags", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 10 },
+        { $project: { tag: "$_id", count: 1, _id: 0 } },
+      ]),
+    ]);
+
+    const statusMap = Object.fromEntries(
+      aiStatusCounts.map((s) => [s.status, s.count])
+    );
+    const completed = statusMap.COMPLETED || 0;
+    const failed = statusMap.FAILED || 0;
+    const skipped = statusMap.SKIPPED || 0;
+    const pending = statusMap.PENDING || 0;
+    const totalProcessed = completed + failed + skipped;
+
+    return res.json({
+      success: true,
+      data: {
+        processing: {
+          total: completed + failed + skipped + pending,
+          pending,
+          completed,
+          failed,
+          skipped,
+          successRate: totalProcessed > 0
+            ? Number((completed / totalProcessed).toFixed(4))
+            : 0,
+        },
+        confidence: {
+          average: Number((confidenceAgg[0]?.avgConfidence || 0).toFixed(4)),
+          totalAnalyzed: confidenceAgg[0]?.count || 0,
+        },
+        categoryDistribution,
+        priorityDistribution,
+        criticalTrend,
+        topTags,
+        runtimeMetrics: getAiRuntimeMetrics(),
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { getAdminAnalytics, getAiAnalytics };

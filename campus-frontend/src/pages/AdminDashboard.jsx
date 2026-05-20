@@ -39,6 +39,7 @@ function AdminDashboard() {
   );
   const { data: technicians, refetch: fetchTechnicians } = useFetch("/auth/technicians");
   const { data: analytics, loading: analyticsLoading, refetch: fetchAnalytics } = useFetch("/admin/analytics");
+  const { data: aiAnalytics, refetch: fetchAiAnalytics } = useFetch("/admin/analytics/ai");
 
   const refreshAllComplaints = () => {
     fetchComplaints();
@@ -51,6 +52,7 @@ function AdminDashboard() {
       setNotice({ tone: "success", message: successMessage });
       refreshAllComplaints();
       fetchAnalytics();
+      fetchAiAnalytics();
     } catch (err) {
       setNotice({
         tone: "error",
@@ -217,7 +219,12 @@ function AdminDashboard() {
 
       {activeSection === sections.ANALYTICS && (
         <section className="section section--first">
-          <Analytics analytics={analytics} loading={analyticsLoading} onRefresh={fetchAnalytics} />
+          <Analytics
+            analytics={analytics}
+            aiAnalytics={aiAnalytics?.data}
+            loading={analyticsLoading}
+            onRefresh={() => { fetchAnalytics(); fetchAiAnalytics(); }}
+          />
         </section>
       )}
 

@@ -1137,6 +1137,179 @@ textarea {
   text-align: center;
 }
 
+/* =============================================
+   AI Analysis Panel (ComplaintCard)
+   ============================================= */
+.ai-panel {
+  margin: var(--spacing-sm) 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 12px;
+  background: rgba(99, 102, 241, 0.05);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  display: grid;
+  gap: 8px;
+}
+
+.ai-panel--pending {
+  background: rgba(100, 116, 139, 0.05);
+  border-color: rgba(100, 116, 139, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-panel--failed {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-panel__label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary-accent);
+  padding: 2px 6px;
+  background: var(--primary-accent-light);
+  border-radius: 4px;
+}
+
+.ai-panel__override-note {
+  font-size: 0.68rem;
+  color: #f59e0b;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.ai-panel__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-panel__confidence {
+  display: grid;
+  gap: 4px;
+}
+
+.ai-panel__field-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--secondary-text);
+  opacity: 0.8;
+}
+
+.ai-panel__summary {
+  font-size: 0.82rem;
+  color: var(--secondary-text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ai-panel__routing {
+  font-size: 0.78rem;
+  color: var(--secondary-text);
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* =============================================
+   AI Analytics Section (Analytics.jsx)
+   ============================================= */
+.ai-analytics-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+  margin-top: var(--spacing-md);
+}
+
+.ai-analytics-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.ai-analytics-title {
+  font-family: var(--font-family-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.ai-analytics-subtitle {
+  font-size: 0.82rem;
+  color: var(--secondary-text);
+}
+
+.ai-trend-list {
+  display: grid;
+  gap: 10px;
+}
+
+.ai-trend-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 30px;
+  align-items: center;
+  gap: 12px;
+}
+
+.ai-trend-date {
+  font-size: 0.72rem;
+  color: var(--secondary-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.ai-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--primary-accent-light);
+  color: var(--primary-accent);
+  border: 1px solid var(--primary-accent-border);
+}
+
+.ai-tag-count {
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+/* =============================================
+   Priority / Category Color Helpers
+   ============================================= */
+.priority--critical { color: #b91c1c; }
+.priority--high     { color: #c2410c; }
+.priority--medium   { color: #854d0e; }
+.priority--low      { color: #166534; }
+
+.priority-bar-fill.priority--critical { background: #ef4444; }
+.priority-bar-fill.priority--high     { background: #f97316; }
+.priority-bar-fill.priority--medium   { background: #eab308; }
+
 .glass-button {
   background: var(--glass-bg);
   backdrop-filter: blur(8px);

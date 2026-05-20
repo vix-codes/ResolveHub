@@ -3,6 +3,8 @@ const User = require("../models/User");
 const Counter = require("../models/Counter");
 const logAction = require("../utils/actionLogger");
 const { createNotification, notifyRoles } = require("../utils/notifier");
+const { AI_CATEGORIES, AI_PRIORITIES } = require("../config/ai/complaintTaxonomy");
+const { enqueueComplaintAiProcessing } = require("../services/ai/complaintAiProcessor");
 
 const PRIORITY_RULES = {
   critical: ["electricity", "fire", "gas leak", "lift stuck", "water flooding"],
@@ -119,6 +121,7 @@ exports.createComplaint = async (req, res) => {
       image: normalizedImage || "",
       category: normalizeCategory(category),
       priority,
+      aiStatus: "PENDING",
       token,
       status: "NEW",
       createdBy: req.user.id,
@@ -133,6 +136,8 @@ exports.createComplaint = async (req, res) => {
       note: `Complaint created: ${title}`,
       req,
     });
+
+    enqueueComplaintAiProcessing(complaint);
 
     res.status(201).json({ success: true, data: complaint });
   } catch (err) {
@@ -154,6 +159,9 @@ exports.getComplaints = async (req, res) => {
       status,
       excludeStatus,
       includeClosed = "true",
+      aiCategory,
+      aiPriority,
+      aiStatus,
       limit,
     } = req.query;
 
@@ -187,6 +195,21 @@ exports.getComplaints = async (req, res) => {
       } else {
         filter.status = { $ne: "CLOSED" };
       }
+    }
+
+    const normalizedAiCategory = String(aiCategory || "").trim().toUpperCase();
+    if (normalizedAiCategory && AI_CATEGORIES.includes(normalizedAiCategory)) {
+      filter.aiCategory = normalizedAiCategory;
+    }
+
+    const normalizedAiPriority = String(aiPriority || "").trim().toUpperCase();
+    if (normalizedAiPriority && AI_PRIORITIES.includes(normalizedAiPriority)) {
+      filter.aiPriority = normalizedAiPriority;
+    }
+
+    const normalizedAiStatus = String(aiStatus || "").trim().toUpperCase();
+    if (["PENDING", "COMPLETED", "FAILED", "SKIPPED"].includes(normalizedAiStatus)) {
+      filter.aiStatus = normalizedAiStatus;
     }
 
     const parsedLimit = Number(limit);
@@ -508,6 +531,7 @@ exports.updatePriority = async (req, res) => {
 
     const previous = complaint.priority;
     complaint.priority = priority;
+    complaint.priorityManuallyOverridden = true;
     complaint.lastUpdatedBy = req.user.id;
     await complaint.save();
 

@@ -39,9 +39,86 @@ const complaintSchema = new mongoose.Schema(
       default: "medium",
     },
 
+    priorityManuallyOverridden: {
+      type: Boolean,
+      default: false,
+    },
+
     category: {
       type: String,
       default: "general",
+    },
+
+    aiStatus: {
+      type: String,
+      enum: ["PENDING", "COMPLETED", "FAILED", "SKIPPED"],
+      default: "PENDING",
+      index: true,
+    },
+
+    aiCategory: {
+      type: String,
+      default: null,
+      index: true,
+    },
+
+    aiPriority: {
+      type: String,
+      default: null,
+      index: true,
+    },
+
+    aiConfidence: {
+      type: Number,
+      min: 0,
+      max: 1,
+      default: null,
+    },
+
+    aiTags: {
+      type: [String],
+      default: [],
+    },
+
+    aiSummary: {
+      type: String,
+      default: "",
+    },
+
+    aiSuggestedRouting: {
+      type: String,
+      default: "",
+    },
+
+    aiProcessedAt: {
+      type: Date,
+      default: null,
+    },
+
+    aiErrorCode: {
+      type: String,
+      default: "",
+    },
+
+    aiModel: {
+      type: String,
+      default: "",
+    },
+
+    aiLatencyMs: {
+      type: Number,
+      default: null,
+    },
+
+    aiAttempts: {
+      type: Number,
+      default: 0,
+    },
+
+    aiMetadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+      select: false,
     },
 
     createdBy: {
@@ -133,5 +210,6 @@ const complaintSchema = new mongoose.Schema(
 complaintSchema.index({ status: 1 });
 complaintSchema.index({ assignedTo: 1 });
 complaintSchema.index({ createdAt: -1 });
+complaintSchema.index({ aiCategory: 1, aiPriority: 1 });
 
 module.exports = mongoose.model("Complaint", complaintSchema, "requests");
