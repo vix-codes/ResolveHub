@@ -110,7 +110,7 @@ export const mockHandlers = {
 };
 
 export const handleMockAction = (config) => {
-  const url = config.url.replace(/^\/api/, "");
+  const url = config.url.replace(/^.*\/api/, "");
   const method = config.method.toLowerCase();
   const body = config.data;
 

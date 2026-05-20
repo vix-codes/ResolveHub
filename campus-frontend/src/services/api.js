@@ -26,6 +26,12 @@ const withApiPrefix = (base) => {
   return /\/api\/?$/i.test(v) ? v : `${v}/api`;
 };
 
+const getSameOriginApiBase = () => {
+  const basePath = String(import.meta.env.BASE_URL || "/").trim();
+  const normalizedBase = basePath === "/" ? "" : `/${basePath.replace(/^\/+|\/+$/g, "")}`;
+  return `${normalizedBase}/api`;
+};
+
 const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true" || import.meta.env.VITE_DEMO_MODE === true;
 
 export const getDemoLoginResponse = () => {
@@ -42,7 +48,7 @@ const API = axios.create({
   baseURL: (() => {
     const envBase = normalizeBaseUrl(import.meta.env.VITE_API_URL);
     if (envBase) return withApiPrefix(envBase);
-    return "/api";
+    return getSameOriginApiBase();
   })(),
 });
 

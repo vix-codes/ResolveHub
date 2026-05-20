@@ -8,5 +8,12 @@ describe("Health endpoint", () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("status");
   });
+
+  it("returns 200 from the apartment subdivision health route", async () => {
+    const res = await request(app).get("/apartment/health");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("status");
+  });
 });
 

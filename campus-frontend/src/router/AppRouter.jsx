@@ -1,5 +1,4 @@
 
-import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Home from "../pages/Home";
@@ -8,6 +7,14 @@ import Register from "../pages/Register";
 import AdminDashboard from "../pages/AdminDashboard";
 import TenantDashboard from "../pages/TenantDashboard";
 import TechnicianDashboard from "../pages/TechnicianDashboard";
+
+const normalizeBasename = (value) => {
+  const raw = String(value || "").trim();
+  if (!raw || raw === "/") return "/";
+  return `/${raw.replace(/^\/+|\/+$/g, "")}`;
+};
+
+const routerBasename = normalizeBasename(import.meta.env.BASE_URL);
 
 // A component to protect routes that require authentication
 const PrivateRoute = ({ children, requiredRoles }) => {
@@ -45,7 +52,7 @@ const AppRouter = () => {
   };
 
   return (
-    <Router>
+    <Router basename={routerBasename}>
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Home />} />

@@ -2,9 +2,20 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "http://143.198.160.235:8080/api/:path*"
+      "source": "/apartment/api/:path*",
+      "destination": "http://143.198.160.235/apartment/api/:path*"
     },
+    {
+      "source": "/apartment/health",
+      "destination": "http://143.198.160.235/apartment/health"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "http://143.198.160.235/apartment/api/:path*"
+    },
+    { "source": "/apartment/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/apartment/favicon.svg", "destination": "/favicon.svg" },
+    { "source": "/apartment/:path*", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

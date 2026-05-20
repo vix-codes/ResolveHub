@@ -21,6 +21,14 @@ const sanitizeMiddleware = require("./middlewares/sanitizer");
 
 const app = express();
 
+const normalizeMountPath = (value) => {
+  const raw = String(value || "").trim();
+  if (!raw || raw === "/") return "";
+  return `/${raw.replace(/^\/+|\/+$/g, "")}`;
+};
+
+const appBasePath = normalizeMountPath(process.env.APP_BASE_PATH || "/apartment");
+
 // ----------------------------------------
 // Global Middlewares
 // ----------------------------------------
@@ -49,6 +57,12 @@ app.get("/health", (req, res) => {
   res.json({ status: "Server running 🚀" });
 });
 
+if (appBasePath) {
+  app.get(`${appBasePath}/health`, (req, res) => {
+    res.json({ status: "Server running 🚀" });
+  });
+}
+
 // ----------------------------------------
 // API Routes
 // ----------------------------------------
@@ -63,6 +77,9 @@ apiRouter.use("/admin", adminRoutes);
 
 // All API routes will be prefixed with /api
 app.use("/api", apiRouter);
+if (appBasePath) {
+  app.use(`${appBasePath}/api`, apiRouter);
+}
 
 // ----------------------------------------
 // Error Handling Middleware (must be last)
