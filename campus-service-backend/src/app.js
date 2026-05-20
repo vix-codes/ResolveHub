@@ -8,6 +8,8 @@ const authRoutes = require("./routes/authRoutes");
 const auditRoutes = require("./routes/auditRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const healthRoutes = require("./routes/healthRoutes");
+const evalRoutes = require("./routes/evalRoutes");
 
 // Middleware imports
 const errorHandler = require("./middlewares/errorHandler");
@@ -27,7 +29,7 @@ const normalizeMountPath = (value) => {
   return `/${raw.replace(/^\/+|\/+$/g, "")}`;
 };
 
-const appBasePath = normalizeMountPath(process.env.APP_BASE_PATH || "/apartment");
+const appBasePath = normalizeMountPath(process.env.APP_BASE_PATH || "/resolvehub");
 
 // ----------------------------------------
 // Global Middlewares
@@ -53,14 +55,9 @@ app.use(requestLogger);
 // ----------------------------------------
 // Public & Health Check Routes
 // ----------------------------------------
-app.get("/health", (req, res) => {
-  res.json({ status: "Server running 🚀" });
-});
-
+app.use("/health", healthRoutes);
 if (appBasePath) {
-  app.get(`${appBasePath}/health`, (req, res) => {
-    res.json({ status: "Server running 🚀" });
-  });
+  app.use(`${appBasePath}/health`, healthRoutes);
 }
 
 // ----------------------------------------
@@ -68,14 +65,13 @@ if (appBasePath) {
 // ----------------------------------------
 const apiRouter = express.Router();
 
-// Mount the various resource routes
 apiRouter.use("/auth", authRoutes);
 apiRouter.use("/complaints", complaintRoutes);
 apiRouter.use("/audit", auditRoutes);
 apiRouter.use("/notifications", notificationRoutes);
 apiRouter.use("/admin", adminRoutes);
+apiRouter.use("/eval", evalRoutes);
 
-// All API routes will be prefixed with /api
 app.use("/api", apiRouter);
 if (appBasePath) {
   app.use(`${appBasePath}/api`, apiRouter);
